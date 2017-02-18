@@ -1,2 +1,11 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost:3000');
+  console.log('connecting');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script>
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
