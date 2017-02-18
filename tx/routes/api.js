@@ -1,4 +1,5 @@
 var express = require('express');
+var io = require('../app.js');
 var router = express.Router();
 
 //All of our parties
@@ -18,7 +19,7 @@ Party {
 function buildParty(rawParty) {
     var party = {};
     //ID must be at least 1, and will be 1 greater than the highest party currently in the array. 
-    party.id = parties.length + 2;
+    party.id = parties.length == 0 ? 1000 : (parties.length + 1);
     party.name = rawParty.name;
     party.host = rawParty.host;
     party.tracks = rawParty.tracks;
@@ -132,6 +133,7 @@ router.post('/party/:id/update', function(req, res, next) {
     if (party == null) {
         res.status(500).send('Party not updated');
     } else {
+        io.to(req.params.id).emit('party updated', req.body):
         res.send(party);
     }
 });
@@ -142,6 +144,7 @@ router.post('/party/:id/join', function(req, res, next) {
     if (party == null) {
         res.status(500).send('Party not updated');
     } else {
+        io.to(req.params.id).emit('client joined party', req.body):
         res.send(party);
     }
 });
@@ -152,6 +155,7 @@ router.delete('/party/:id/leave/:clientId', function(req, res, next) {
     if (party == null) {
         res.status(500).send('Party not updated');
     } else {
+        io.to(req.params.id).emit('client left party', req.params.clientId):
         res.send(party);
     }
 });
@@ -162,6 +166,7 @@ router.delete('/party/:id', function(req, res, next) {
     if (parties[partyId] != null) {
         res.status(500).send('Party not updated');
     } else {
+        io.to(req.params.id).emit('party deleted', req.params.id):
         res.status(204).send();
     }
 });
@@ -172,20 +177,25 @@ router.post('/party/:id/add', function(req, res, next) {
     if (parties == null) {
         res.status(500).send('Party not updated');
     } else {
+        io.to(req.params.id).emit('song added', req.params.songid):
         res.send(parties);
     }
 });
 
-/* Add a song to party */
+/* Remove song from party */
 router.post('/party/:id/remove/:songid', function(req, res, next) {
     var parties = removeTrack(req.params.id, req.params.songid);
     if (parties == null) {
         res.status(500).send('Party not updated');
     } else {
+        io.to(req.params.id).emit('song removed', req.params.songid):
         res.send(parties);
     }
 });
 
+io.on('connection', function(socket){
+  socket.join('some room');
+});
 
 
 module.exports = router;

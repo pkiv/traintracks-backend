@@ -5,12 +5,25 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
-var index = require('./routes/index');
-var users = require('./routes/users');
-var api = require('./routes/api');
+var http = require('http');
 
 var app = express();
+var port = '3000';
+app.set('port', port);
+var server = http.createServer(app);
+server.listen(port);
+
+var io = require('socket.io')(server);
+module.exports = io;
+
+/*io.on('connection', function (socket) {
+  console.log('connected', socket)
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});*/
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +38,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var index = require('./routes/index');
+var users = require('./routes/users');
+var api = require('./routes/api');
 
 app.use('/', index);
 app.use('/users', users);
@@ -47,5 +64,3 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
-
-module.exports = app;
