@@ -88,7 +88,7 @@ function removeTrack (partyId, songid) {
 	var party = parties[partyId];
 
     for (var i = party.tracks.length - 1; i >= 0; i--) {
-        if (party.tracks[i].songid == songid) {
+        if (party.tracks[i].songid == songid + '') {
             party.tracks.splice(i, 1);
             break;
         }
@@ -188,7 +188,7 @@ router.post('/party/:id/remove/:songid', function(req, res, next) {
     if (parties == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('song removed', req.params.songid);
+        io.to(req.params.id).emit('song removed', {songid: req.params.songid});
         res.send(parties);
     }
 });
@@ -198,11 +198,14 @@ router.post('/party/:id/auth', function(req, res, next) {
     console.log(req.body);
     var party = parties[req.params.id];
     if (party == null) {
-        res.status(500).send('Party not updated');
+        var obj = {};
+        obj.id = req.params.id;
+        obj.auth = false;
+        res.send(obj);
     } else {
         var obj = {};
         obj.id = req.params.id;
-        obj.auth = (req.body.password == party.password);
+        obj.auth = (req.body.password == (party.password + ''));
         res.send(obj);
     }
 });
