@@ -4,7 +4,7 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
-		var socket = io.connect('http://localhost:3000');
+		var socket = io.connect('http://traintrax.me:3000');
 		socket.emit('join room', { id: {{id}} });
 		console.log('connecting');
 		socket.on('song added', function(msg) {

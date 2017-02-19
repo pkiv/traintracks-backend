@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:id', function(req, res, next) {
-	request('http://localhost:3000/api/party/' + req.params.id, function(error, response, body) {
+	request('http://traintrax.me:3000/api/party/' + req.params.id, function(error, response, body) {
             		if (!error && response.statusCode == 200) {
             			console.log(body);
             			res.render('party',  JSON.parse(body));
@@ -26,7 +26,7 @@ router.post('/join', function(req, res, next) {
     };
 
     request({
-        url: 'http://localhost:3000/api/party/' + req.body.partyid + '/auth',
+        url: 'http://traintrax.me:3000/api/party/' + req.body.partyid + '/auth',
         method: "POST",
         json: auth
     }, function(error, response, body) {
