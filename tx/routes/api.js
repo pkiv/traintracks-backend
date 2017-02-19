@@ -133,7 +133,7 @@ router.post('/party/:id/update', function(req, res, next) {
     if (party == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('party updated', req.body):
+        io.to(req.params.id).emit('party updated', req.body);
         res.send(party);
     }
 });
@@ -144,7 +144,7 @@ router.post('/party/:id/join', function(req, res, next) {
     if (party == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('client joined party', req.body):
+        io.to(req.params.id).emit('client joined party', req.body);
         res.send(party);
     }
 });
@@ -155,7 +155,7 @@ router.delete('/party/:id/leave/:clientId', function(req, res, next) {
     if (party == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('client left party', req.params.clientId):
+        io.to(req.params.id).emit('client left party', req.params.clientId);
         res.send(party);
     }
 });
@@ -166,7 +166,7 @@ router.delete('/party/:id', function(req, res, next) {
     if (parties[partyId] != null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('party deleted', req.params.id):
+        io.to(req.params.id).emit('party deleted', req.params.id);
         res.status(204).send();
     }
 });
@@ -177,7 +177,7 @@ router.post('/party/:id/add', function(req, res, next) {
     if (parties == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('song added', req.params.songid):
+        io.to(req.params.id).emit('song added', req.params.songid);
         res.send(parties);
     }
 });
@@ -188,14 +188,36 @@ router.post('/party/:id/remove/:songid', function(req, res, next) {
     if (parties == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('song removed', req.params.songid):
+        io.to(req.params.id).emit('song removed', req.params.songid);
         res.send(parties);
     }
 });
 
-io.on('connection', function(socket){
-  socket.join('some room');
+/*Authenticate against a party */
+router.post('/party/:id/auth', function(req, res, next) {
+    console.log(req.body);
+    var party = parties[req.params.id];
+    if (party == null) {
+        res.status(500).send('Party not updated');
+    } else {
+        var obj = {};
+        obj.id = req.params.id;
+        obj.auth = (req.body.password == party.password);
+        res.send(obj);
+    }
 });
 
+// Socket stuff
+io.on('connection', function(socket) {
+    io.to(socket.id).emit('welcome', 'You are connected to the socket');
+    socket.on('join room', function(object) {
+        console.log("It's working????");
+        console.log(object);
+        socket.join(object.partyId);
+    });
+    socket.on('leave room', function(object) {
+        socket.leave(object.partyId);
+    });
+});
 
 module.exports = router;
