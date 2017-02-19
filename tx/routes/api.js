@@ -177,7 +177,7 @@ router.post('/party/:id/add', function(req, res, next) {
     if (parties == null) {
         res.status(500).send('Party not updated');
     } else {
-        io.to(req.params.id).emit('song added', req.params.songid);
+        io.to(req.params.id).emit('song added', req.body);
         res.send(parties);
     }
 });
@@ -211,12 +211,10 @@ router.post('/party/:id/auth', function(req, res, next) {
 io.on('connection', function(socket) {
     io.to(socket.id).emit('welcome', 'You are connected to the socket');
     socket.on('join room', function(object) {
-        console.log("It's working????");
-        console.log(object);
-        socket.join(object.partyId);
+        socket.join(object.id);
     });
     socket.on('leave room', function(object) {
-        socket.leave(object.partyId);
+        socket.leave(object.id);
     });
 });
 
